@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quiz Creator - Hỗ trợ Giáo viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input, select, button, .glass {
+            border-radius: 20px !important;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #2e1065 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            appearance: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                Trình Tạo Đề Thi AI
+            </h1>
+            <p class="text-gray-400 text-lg">Dành cho bố mẹ - Lớp 10, 11, 12</p>
+        </header>
+
+        <div class="glass p-8 mb-8">
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2 text-purple-200">Google Gemini API Key:</label>
+                <input type="password" id="apiKey" placeholder="Dán API Key để bắt đầu..." 
+                    class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-purple-500 outline-none transition">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-purple-200">Khối lớp:</label>
+                    <select id="grade" class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                        <option value="Lớp 10">Lớp 10</option>
+                        <option value="Lớp 11">Lớp 11</option>
+                        <option value="Lớp 12">Lớp 12</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-purple-200">Môn học:</label>
+                    <select id="subject" class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                        <option value="Ngữ văn">Ngữ văn</option>
+                        <option value="Toán">Toán</option>
+                        <option value="Ngoại ngữ (Tiếng Anh)">Ngoại ngữ (Tiếng Anh)</option>
+                        <option value="Vật lý">Vật lý</option>
+                        <option value="Hóa học">Hóa học</option>
+                        <option value="Sinh học">Sinh học</option>
+                        <option value="Lịch sử">Lịch sử</option>
+                        <option value="Địa lý">Địa lý</option>
+                        <option value="Giáo dục kinh tế và pháp luật">Giáo dục kinh tế và pháp luật</option>
+                        <option value="Tin học">Tin học</option>
+                        <option value="Công nghệ">Công nghệ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2 text-purple-200">Chủ đề/Nội dung bài học:</label>
+                <input type="text" id="topic" placeholder="Ví dụ: Đạo hàm, Sóng cơ, Chiến tranh thế giới..." 
+                    class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-purple-500 outline-none transition">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-purple-200">Mức độ:</label>
+                    <select id="level" class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                        <option value="Dễ (Nhận biết)">Nhận biết</option>
+                        <option value="Trung bình (Thông hiểu)">Thông hiểu</option>
+                        <option value="Khó (Vận dụng)">Vận dụng</option>
+                        <option value="Rất khó (Vận dụng cao)">Vận dụng cao</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-purple-200">Số câu:</label>
+                    <input type="number" id="count" value="10" min="1" max="40" 
+                        class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-purple-500 outline-none">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="generateQuiz()" id="btnGen" 
+                        class="w-full h-[58px] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/20">
+                        Tạo Đề Ngay ✨
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultArea" class="hidden mb-10">
+            <div class="flex justify-between items-center mb-5 px-2">
+                <h2 class="text-2xl font-semibold text-purple-100 italic" id="resultTitle">Kết quả</h2>
+                <button onclick="copyContent()" class="bg-slate-700 hover:bg-slate-600 px-5 py-2 rounded-full transition-all flex items-center gap-2">
+                    Sao chép
+                </button>
+            </div>
+            <div id="quizContent" class="glass p-8 rounded-2xl whitespace-pre-wrap leading-relaxed text-gray-200 shadow-inner"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+        });
+
+        async function generateQuiz() {
+            const key = document.getElementById('apiKey').value.trim();
+            const grade = document.getElementById('grade').value;
+            const subject = document.getElementById('subject').value;
+            const topic = document.getElementById('topic').value.trim();
+            const level = document.getElementById('level').value;
+            const count = document.getElementById('count').value;
+            const btn = document.getElementById('btnGen');
+            const resultArea = document.getElementById('resultArea');
+            const quizContent = document.getElementById('quizContent');
+
+            if(!key) { alert("Vui lòng nhập API Key!"); return; }
+            localStorage.setItem('gemini_api_key', key);
+
+            btn.innerText = "Đang soạn bài...";
+            btn.disabled = true;
+            resultArea.classList.add('hidden');
+
+            const prompt = `Bạn là chuyên gia giáo dục bậc THPT tại Việt Nam. Hãy soạn đề thi cho đối tượng là học sinh ${grade}. 
+Môn: ${subject}. 
+Chủ đề: ${topic || 'Kiến thức tổng hợp'}. 
+Số lượng: ${count} câu hỏi trắc nghiệm (4 phương án A,B,C,D). 
+Mức độ: ${level}.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await response.json();
+                const text = data.candidates[0].content.parts[0].text;
+
+                document.getElementById('resultTitle').innerText = `Đề thi ${subject} - ${grade}`;
+                quizContent.innerText = text;
+                resultArea.classList.remove('hidden');
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                alert("Lỗi kết nối AI rồi! Bố mẹ hãy thử lại nhé.");
+            } finally {
+                btn.innerText = "Tạo Đề Ngay ✨";
+                btn.disabled = false;
+            }
+        }
+
+        function copyContent() {
+            const content = document.getElementById('quizContent').innerText;
+            navigator.clipboard.writeText(content).then(() => alert("Đã sao chép!"));
+        }
+    </script>
+</body>
+</html>
